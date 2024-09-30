@@ -96,6 +96,17 @@ class DVRouter(DVRouterBase):
         """
         
         ##### Begin Stage 2 #####
+        if packet.dst not in self.table:
+            return
+        curr_min_latency = float("inf")
+        curr_neighbor = None
+        for host, entry in self.table.items():
+            if entry[0] == packet.dst and entry[2] <= curr_min_latency:
+                curr_neighbor = entry
+                curr_min_latency = entry[2]
+        if curr_neighbor[2] >= INFINITY:
+            return
+        self.send(packet, port=curr_neighbor[1])
 
         ##### End Stage 2 #####
 
